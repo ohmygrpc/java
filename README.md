@@ -1,2 +1,2 @@
 # java
-> gRPC Java server example
+> gRPC Java server boilerplate

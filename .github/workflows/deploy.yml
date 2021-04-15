@@ -5,7 +5,7 @@ on:
 
 env:
   ORG_NAME: 'ohmygrpc'
-  service_name: 'java'
+  SERVICE_NAME: 'java'
 
 jobs:
   deploy:
@@ -46,7 +46,7 @@ jobs:
         run: |
           export PATH=$PATH:/home/runner/.linkerd2/bin
           kustomize build kustomize/${{ github.event.deployment.environment }} \
-            | SERVICE_NAME=${{ env.service_name }} IMAGE_TAG=$GITHUB_SHA envsubst \
+            | ORG_NAME=${{ env.ORG_NAME }} SERVICE_NAME=${{ env.SERVICE_NAME }} IMAGE_TAG=$GITHUB_SHA envsubst \
             | linkerd inject - \
             | kubectl -n ${{ github.event.deployment.environment }} apply -f -
 

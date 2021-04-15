@@ -1,6 +1,7 @@
 FROM golang:1.16.3 as build
 
-ENV SERVICE_NAME=grpc-java
+ENV ORG_NAME=ohmygrpc
+ENV SERVICE_NAME=java
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -14,7 +15,8 @@ RUN if [ "$BUILDPLATFORM" = "linux/arm64" ]; then mv ${SERVICE_NAME}-grpcgateway
 
 FROM --platform=$BUILDPLATFORM gcr.io/distroless/base
 
-ENV SERVICE_NAME=grpc-java
+ENV ORG_NAME=ohmygrpc
+ENV SERVICE_NAME=java
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM

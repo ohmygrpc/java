@@ -5,7 +5,7 @@ on:
 
 env:
   ORG_NAME: 'ohmygrpc'
-  service_name: 'java'
+  SERVICE_NAME: 'java'
 
 jobs:
   unit:
@@ -113,7 +113,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/${{ env.ORG_NAME }}/${{ env.service_name }}:${{ github.sha }}
+            ghcr.io/${{ env.ORG_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
 
   build-gateway:
     name: Build and Push grpcgateway
@@ -160,7 +160,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/${{ env.ORG_NAME }}/${{ env.service_name }}-grpcgateway:${{ github.sha }}
+            ghcr.io/${{ env.ORG_NAME }}/${{ env.SERVICE_NAME }}-grpcgateway:${{ github.sha }}
 
   deploy-staging:
     name: Deploy to staging
