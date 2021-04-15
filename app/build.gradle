@@ -1,0 +1,144 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'eclipse'
+    id 'idea'
+    id "com.google.protobuf" version "0.8.15"
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'com.diffplug.spotless' version '5.12.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micrometer:micrometer-bom:1.5.3'
+        mavenBom 'io.netty:netty-bom:4.1.51.Final'
+        mavenBom 'com.linecorp.armeria:armeria-bom:1.5.0'
+        mavenBom 'org.junit:junit-bom:5.6.2'
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/idl'
+        }
+        java {
+            srcDir 'build/generated/source/proto/main/java'
+            srcDir 'build/generated/source/proto/main/grpc'
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.assertj:assertj-core:3.16.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+
+    implementation 'com.linecorp.armeria:armeria'
+    implementation 'com.linecorp.armeria:armeria-grpc'
+    implementation 'io.projectreactor:reactor-core:3.3.8.RELEASE'
+    compileOnly 'javax.annotation:javax.annotation-api'
+    runtimeOnly 'org.slf4j:slf4j-simple:1.7.30'
+
+    testImplementation 'javax.annotation:javax.annotation-api'
+    testImplementation 'net.javacrumbs.json-unit:json-unit-fluent:2.18.1'
+    testImplementation 'org.assertj:assertj-core:3.16.1'
+    testImplementation 'org.awaitility:awaitility:4.0.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+
+    implementation platform('com.linecorp.armeria:armeria-bom:1.5.0')
+    implementation 'com.linecorp.armeria:armeria-logback'
+    implementation 'net.logstash.logback:logstash-logback-encoder:5.2'
+}
+
+protobuf {
+    protoc {
+        if (osdetector.os == 'osx') {
+            artifact = 'com.google.protobuf:protoc:3.14.0:osx-x86_64'
+        } else {
+            artifact = 'com.google.protobuf:protoc:3.14.0'
+        }
+    }
+    plugins {
+        grpc {
+            if (osdetector.os == 'osx') {
+                artifact = 'io.grpc:protoc-gen-grpc-java:1.35.1:osx-x86_64'
+            } else {
+                artifact = 'io.grpc:protoc-gen-grpc-java:1.35.1'
+            }
+        }
+    }
+    generateProtoTasks {
+        ofSourceSet('main')*.plugins {
+            grpc {}
+        }
+    }
+}
+
+spotless {
+    java {
+        target project.fileTree(project.rootDir) {
+            include '**/*.java'
+            exclude '**/generated/**/*.*'
+        }
+        googleJavaFormat()
+        // to have 4 spaces indent with google java style guide.
+        // https://github.com/diffplug/spotless/issues/317
+        indentWithTabs(2)
+        indentWithSpaces(4)
+    }
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+    options.encoding = 'UTF-8'
+    options.debug = true
+    options.compilerArgs += '-parameters'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+
+def mainClassName = 'com.github.ohmygrpc.java.grpc.Main'
+
+application {
+    mainClass.set(mainClassName)
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
+}
+
+spotlessJava.dependsOn('extractIncludeProto');
+spotlessJava.dependsOn('extractProto');
+spotlessJava.dependsOn('generateProto');
+spotlessJava.dependsOn('extractTestProto');
+
+compileJava.dependsOn('spotlessJava')
+compileTestJava.dependsOn('spotlessJava')
+processResources.dependsOn('spotlessJava')
+jar.dependsOn('spotlessJava')

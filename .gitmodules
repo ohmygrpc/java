@@ -1,0 +1,4 @@
+[submodule "idl"]
+	path = idl
+	url = git@github.com:grpc-boilerplate/idl.git
+	branch=main
