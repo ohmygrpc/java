@@ -1,10 +1,10 @@
-package com.github.grpcboilerplate.echo.grpc;
+package com.github.ohmygrpc.echo.grpc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.github.grpcboilerplate.idl.services.echo.v1.EchoRequest;
-import com.github.grpcboilerplate.idl.services.echo.v1.EchoServiceGrpc;
-import com.github.grpcboilerplate.idl.services.echo.v1.HealthCheckRequest;
+import com.github.ohmygrpc.idl.services.echo.v1.EchoRequest;
+import com.github.ohmygrpc.idl.services.echo.v1.EchoServiceGrpc;
+import com.github.ohmygrpc.idl.services.echo.v1.HealthCheckRequest;
 import com.linecorp.armeria.client.Clients;
 import com.linecorp.armeria.server.Server;
 import org.junit.jupiter.api.AfterAll;
