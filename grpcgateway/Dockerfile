@@ -9,11 +9,11 @@ ARG BUILDPLATFORM
 WORKDIR /${SERVICE_NAME}-grpcgateway/bin
 COPY ./bin ./
 
-RUN if [ "$BUILDPLATFORM" = "linux/amd64" ]; then mv ${SERVICE_NAME}-grpcgateway.linux.amd64 ${SERVICE_NAME}-grpcgateway ; fi
-RUN if [ "$BUILDPLATFORM" = "linux/arm64" ]; then mv ${SERVICE_NAME}-grpcgateway.linux.arm64 ${SERVICE_NAME}-grpcgateway ; fi
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then mv ${SERVICE_NAME}-grpcgateway.linux.amd64 ${SERVICE_NAME}-grpcgateway ; fi
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then mv ${SERVICE_NAME}-grpcgateway.linux.arm64 ${SERVICE_NAME}-grpcgateway ; fi
 
 
-FROM --platform=$BUILDPLATFORM gcr.io/distroless/base
+FROM --platform=$TARGETPLATFORM gcr.io/distroless/base
 
 ENV ORG_NAME=ohmygrpc
 ENV SERVICE_NAME=java
